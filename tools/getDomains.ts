@@ -58,7 +58,7 @@ export function registerGetDomainsTool(server: McpServer) {
     );
 }
 
-// Schema for individual domain configuration
+// Schema for individual domain configuration - made more flexible
 const domainConfigSchema = z.object({
     UseCanonicalName: z.string(),
     acme_provider: z.string(),
@@ -81,7 +81,7 @@ const domainConfigSchema = z.object({
     subdomain: z.string(),
     suspended: z.string(),
     username: z.string(),
-});
+}).passthrough(); // Allow additional properties
 
-// Schema for the entire domains response (record of domain name -> domain config)
-const domainsPayloadSchema = z.record(z.string(), domainConfigSchema);
+// Schema for the entire domains response - use a more flexible approach
+const domainsPayloadSchema = z.record(z.string(), z.any());

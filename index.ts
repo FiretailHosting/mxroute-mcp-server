@@ -19,8 +19,8 @@ const app = express();
 app.use(express.json());
 
 // Request logging middleware (enabled when LOG_LEVEL=debug or DEBUG=true)
-const shouldLog = process.env.LOG_LEVEL === 'debug' || process.env.DEBUG === 'true';
-if (shouldLog) {
+const isDebugMode = process.env.LOG_LEVEL === 'debug' || process.env.DEBUG === 'true';
+if (isDebugMode) {
     app.use((req, res, next) => {
         const start = Date.now();
 
@@ -105,14 +105,15 @@ const host = process.env.HOST || process.env.BIND_ADDRESS || '127.0.0.1';
 console.log(`MXRoute MCP Server v0.1.0 starting...`);
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 console.log(`Log Level: ${process.env.LOG_LEVEL || 'info'}`);
-console.log(`Debug Mode: ${process.env.DEBUG === 'true' ? 'enabled' : 'disabled'}`);
+console.log(`Debug Mode: ${isDebugMode ? 'enabled' : 'disabled'}`);
 console.log(`Bind Address: ${host}:${port}`);
 console.log(`MX Host: ${process.env.MX_HOST || 'not configured'}`);
 console.log(`MX Port: ${process.env.MX_PORT || 'not configured'}`);
 console.log(`MX User: ${process.env.MX_USER ? '***configured***' : 'not configured'}`);
 console.log(`MX API Key: ${process.env.MX_KEY ? '***configured***' : 'not configured'}`);
 console.log(`MCP Secret: ${process.env.MCP_SECRET ? '***configured***' : 'not configured (auth disabled)'}`);
-console.log(`Request Logging: ${shouldLog ? 'enabled' : 'disabled'}`);
+console.log(`Request Logging: ${isDebugMode ? 'enabled' : 'disabled'}`);
+console.log(`Available Tools: mx_createAccount, mx_deleteAccount, mx_suspendAccount, mx_unsuspendAccount, mx_purgeAccount, mx_getAccounts, mx_getDomains`);
 
 app.listen(port, host, () => {
     console.log(`✓ MCP Server running on http://${host}:${port}/mcp`);

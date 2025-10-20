@@ -62,7 +62,7 @@ export function registerGetAccountsTool(server: McpServer) {
 const lastPasswordChangeSchema = z.object({
   ip: z.string(),
   when: z.string(),
-});
+}).passthrough();
 
 const usageSchema = z.object({
   apparent_usage: z.string(),
@@ -71,14 +71,14 @@ const usageSchema = z.object({
   webmail_bytes: z.string(),
   quota: z.string().optional(),
   last_password_change: lastPasswordChangeSchema.optional(),
-});
+}).passthrough();
 
 // "sent" is sometimes an object, sometimes an empty string
 const sentSchema = z.union([
   z.object({
     send_limit: z.string(),
     sent: z.string(),
-  }),
+  }).passthrough(),
   z.string(), // ""
 ]);
 
@@ -88,7 +88,7 @@ const emailEntrySchema = z.object({
   usage: usageSchema,
   sent: sentSchema,
   suspended: z.string(),         // "no" / "yes"
-});
+}).passthrough();
 
 // special "info" row inside emails
 const emailsInfoSchema = z.object({
@@ -98,12 +98,12 @@ const emailsInfoSchema = z.object({
     usage: z.string(),
     sent: z.string(),
     suspended: z.string(),
-  }),
+  }).passthrough(),
   current_page: z.string(),
   ipp: z.string(),
   rows: z.string(),
   total_pages: z.string(),
-});
+}).passthrough();
 
 // emails: object keyed by "0","1","2",... plus "info"
 const emailsMapSchema = z.record(
@@ -111,12 +111,12 @@ const emailsMapSchema = z.record(
   z.union([emailEntrySchema, emailsInfoSchema])
 );
 
-// common “select” option maps (purge_select, when_select)
+// common "select" option maps (purge_select, when_select)
 const selectOptionSchema = z.object({
   text: z.string(),
   value: z.string(),
   selected: z.string().optional(), // sometimes "yes"
-});
+}).passthrough();
 
 const selectMapSchema = z.record(z.string(), selectOptionSchema);
 const accountsPayloadSchema = z
