@@ -101,8 +101,21 @@ const port = parseInt(process.env.PORT || '3000');
 // Allow configuring bind address via HOST or BIND_ADDRESS env var. Default to localhost for safety.
 const host = process.env.HOST || process.env.BIND_ADDRESS || '127.0.0.1';
 
+// Log startup configuration (non-sensitive values only)
+console.log(`MXRoute MCP Server v0.1.0 starting...`);
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`Log Level: ${process.env.LOG_LEVEL || 'info'}`);
+console.log(`Debug Mode: ${process.env.DEBUG === 'true' ? 'enabled' : 'disabled'}`);
+console.log(`Bind Address: ${host}:${port}`);
+console.log(`MX Host: ${process.env.MX_HOST || 'not configured'}`);
+console.log(`MX Port: ${process.env.MX_PORT || 'not configured'}`);
+console.log(`MX User: ${process.env.MX_USER ? '***configured***' : 'not configured'}`);
+console.log(`MX API Key: ${process.env.MX_KEY ? '***configured***' : 'not configured'}`);
+console.log(`MCP Secret: ${process.env.MCP_SECRET ? '***configured***' : 'not configured (auth disabled)'}`);
+console.log(`Request Logging: ${shouldLog ? 'enabled' : 'disabled'}`);
+
 app.listen(port, host, () => {
-    console.log(`Demo MCP Server running on http://${host}:${port}/mcp`);
+    console.log(`✓ MCP Server running on http://${host}:${port}/mcp`);
 }).on('error', error => {
     console.error('Server error:', error);
     process.exit(1);
