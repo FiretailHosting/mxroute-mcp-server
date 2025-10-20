@@ -61,8 +61,11 @@ app.post('/mcp', authenticateRequest, async (req, res) => {
 });
 
 const port = parseInt(process.env.PORT || '3000');
-app.listen(port, () => {
-    console.log(`Demo MCP Server running on http://localhost:${port}/mcp`);
+// Allow configuring bind address via HOST or BIND_ADDRESS env var. Default to localhost for safety.
+const host = process.env.HOST || process.env.BIND_ADDRESS || '127.0.0.1';
+
+app.listen(port, host, () => {
+    console.log(`Demo MCP Server running on http://${host}:${port}/mcp`);
 }).on('error', error => {
     console.error('Server error:', error);
     process.exit(1);
