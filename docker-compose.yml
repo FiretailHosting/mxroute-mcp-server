@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mxroute-mcp:
+    build:
+      context: https://github.com/FiretailHosting/mxroute-mcp-server.git
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MX_HOST=${MX_HOST}
+      - MX_PORT=${MX_PORT}
+      - MX_USER=${MX_USER}
+      - MX_KEY=${MX_KEY}
+      - MCP_SECRET=${MCP_SECRET}
+      - PORT=3000
+    restart: unless-stopped
