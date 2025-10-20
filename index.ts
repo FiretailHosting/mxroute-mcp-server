@@ -18,6 +18,43 @@ registerPurgeAccountTool(server);
 const app = express();
 app.use(express.json());
 
+// Request logging middleware (enabled when LOG_LEVEL=debug or DEBUG=true)
+const shouldLog = process.env.LOG_LEVEL === 'debug' || process.env.DEBUG === 'true';
+if (shouldLog) {
+    app.use((req, res, next) => {
+        const start = Date.now();
+
+        // After response finishes, log details.
+        res.on('finish', () => {
+            try {
+                const duration = Date.now() - start;
+                let extra = '';
+
+                // If this is the MCP endpoint, try to log JSON-RPC tool call details.
+                if (req.path === '/mcp' && req.body && typeof req.body === 'object') {
+                    const body = req.body as any;
+                    const method = body.method;
+                    if (method === 'tools/call') {
+                        // params may contain { name, arguments }
+                        const params = body.params || {};
+                        const toolName = params.name || params?.arguments?.name || params?.arguments?.tool || '<unknown>';
+                        const toolArgs = params.arguments || params || {};
+                        extra = ` tool=${toolName} args=${JSON.stringify(toolArgs)}`;
+                    } else {
+                        extra = ` rpcMethod=${method} id=${body.id ?? '-'} `;
+                    }
+                }
+
+                console.log(`${new Date().toISOString()} ${req.ip} ${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms${extra}`);
+            } catch (err) {
+                console.error('Request logging error', err);
+            }
+        });
+
+        next();
+    });
+}
+
 // Simple authentication middleware
 const authenticateRequest = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const mcpSecret = process.env.MCP_SECRET;
